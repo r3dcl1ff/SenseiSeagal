@@ -1,3 +1,6 @@
+![sensei](https://github.com/user-attachments/assets/a0f19798-e049-4eb6-83f0-e006da113702)
+
+
 Yo, welcome to Sensei Seagal – Rapid Recon 🌴🥋
 
 Hear mi now, cyber-bredren:
