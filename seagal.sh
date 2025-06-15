@@ -8,7 +8,7 @@
 # =============================================================
 set -euo pipefail
 
-# ───────────────  Styling & Banner  ───────────────
+# ───────────────  Giving swag to da bois  ───────────────
 RED='\e[31m'; NC='\e[0m'
 print_banner() {
   echo -e "${RED}======================================${NC}"
@@ -17,7 +17,7 @@ print_banner() {
   echo -e "${RED}Strap in, bredren! Ryback rollin' full throttle!${NC}"
 }
 
-# ───────────────  Progress Bar  ───────────────
+# ───────────────  Progress Bar see whats cookin'  ───────────────
 print_progress() {
   local cur=$1 total=$2 label=$3
   local perc=$(( cur * 100 / total ))
@@ -28,26 +28,26 @@ print_progress() {
   printf "${RED}%-18s [%s] %3d%%${NC}\n" "$label" "$bar" "$perc"
 }
 
-# ───────────────  Prompt for Targets  ───────────────
+# ───────────────  Prompt for Targets, smash 'em all  ───────────────
 print_banner
 read -rp "Wagwan Bossy?Enter target (CIDR/range) or path to targets file: " TARGET_IN
 [[ -z $TARGET_IN ]] && { echo -e "${RED}No target—abortin', mon!${NC}" >&2; exit 1; }
 read -rp "Wanna run intrusive vuln scripts? (y/N): " RUN_VULNS
 read -rp "Finna run host‑enumeration (hostnames/services)? (y/N): " RUN_HOSTS
 
-# ───────────────  Directory Layout  ───────────────
+# ───────────────  Directory Layout, keep the loot like a japanese pirate  ───────────────
 mkdir -p ips loot/httpx
 SERVICES=(ftp ssh telnet smtp httpx kerberos pop3 rpc netbios smb msrpc snmp ldap modbus mssql nfs mysql rdp vnc redis mongodb)
 for svc in "${SERVICES[@]}"; do mkdir -p "loot/$svc"; done
 mkdir -p loot/vulns loot/hosts
 
-# ───────────────  Speed Profile  ───────────────
+# ───────────────  Speed Profile,we finish faster than a MF ninja  ───────────────
 RATE=500    # packets/sec — lower this to be less invasive
 RETRIES=1   # probe retransmissions
 TEMPLATE=4  # Nmap timing template (0‑slow … 5‑fast)
 NMAP_OPTS="-T${TEMPLATE} --max-retries ${RETRIES} --min-rate ${RATE} -Pn --open"
 
-# ───────────────  Helper Functions  ───────────────
+# ───────────────  Helper Functions, disredard if you're Casey Ryback  ───────────────
 run_nse() {
   local svc="$1" ports="$2" arr_name="$3"
   local -n arr="$arr_name"        # nameref to array
@@ -80,7 +80,7 @@ run_nse_udp() {
   print_progress 1 1 "$svc clean"
 }
 
-# ───────────────  1) Ping Sweep  ───────────────
+# ───────────────  1) Ping Sweep like a 10th Degree Black Belt ───────────────
 echo -e "${RED}Kickin' ping sweep—lightnin' fast!${NC}"
 if [[ -f $TARGET_IN ]]; then
   nmap $NMAP_OPTS -sn -iL "$TARGET_IN" -oG ping.raw &>/dev/null
@@ -92,14 +92,14 @@ LIVE=$(wc -l < ips/ips_full.txt)
 [[ $LIVE -eq 0 ]] && { echo -e "${RED}No live hosts—nothin' to scan, mon!${NC}"; exit 0; }
 print_progress 1 1 "Ping"
 
-# ───────────────  2) Host Enumeration (Optional)  ───────────────
+# ───────────────  2) Host Enumeration (Optional, only if the mission allows it)  ───────────────
 if [[ ${RUN_HOSTS,,} == y* ]]; then
   echo -e "${RED}Collectin' OS & hostnames…${NC}"
   nmap $NMAP_OPTS -O -sV -iL ips/ips_full.txt -oN loot/hosts/hostname_os.txt &>/dev/null
   print_progress 1 1 "Host‑enum"
 fi
 
-# ───────────────  3) Core TCP Batches  ───────────────
+# ───────────────  3) Check common services and F them up  ───────────────
 ftp_scripts=(ftp-anon.nse tftp-version.nse ftp-vsftpd-backdoor.nse ftp-syst.nse ftp-vuln-cve2010-4221.nse ftp-proftpd-backdoor.nse)
 ssh_scripts=(ssh-publickey-acceptance.nse ssh-auth-methods.nse ssh-run.nse sshv1.nse ssh-hostkey.nse)
 telnet_scripts=(telnet-ntlm-info.nse telnet-encryption.nse)
@@ -110,13 +110,13 @@ run_nse ssh    "22,2222" ssh_scripts
 run_nse telnet "23,2323" telnet_scripts
 run_nse smtp   "25,2525" smtp_scripts
 
-# ───────────────  4) HTTPX Quick Check  ───────────────
+# ───────────────  4) HTTPX Quick Check, might want to use the list for Burp or enumerate with -server and -td flag  ───────────────
 echo -e "${RED}HTTPX fly‑by…${NC}"
 PORTS_WEB="80,81,82,88,443,4443,4433,8080,8000,7000,7070,6379,9000"
 cat ips/ips_full.txt | httpx -silent -mc 200 -p "$PORTS_WEB" -o loot/httpx/httpx.txt
 print_progress 1 1 "httpx"
 
-# ───────────────  5) Other TCP Groups  ───────────────
+# ───────────────  5) Other stuff, finish the Job Steve!  ───────────────
 kerb_scripts=(krb5-enum-users.nse)
 pop3_scripts=(pop3-ntlm-info.nse pop3-capabilities.nse)
 rpc_scripts=(nfs-statfs.nse rpcap-info.nse rpc-grind.nse nfs-showmount.nse)
@@ -135,11 +135,11 @@ run_nse msrpc   "135"      msrpc_scripts
 run_nse snmp    "161"      snmp_scripts
 run_nse ldap    "389"      ldap_scripts
 
-# ───────────────  6) Modbus UDP  ───────────────
+# ───────────────  6) Modbus UDP, Sensei likes poonani  ───────────────
 modbus_scripts=(modbus-discover.nse enip-info.nse)
 run_nse_udp modbus "502" modbus_scripts
 
-# ───────────────  7) Other stuff  ───────────────
+# ───────────────  7) Check those NFS shares for all the goodies  ───────────────
 mssql_scripts=(ms-sql-hasdbaccess.nse ms-sql-info.nse ms-sql-ntlm-info.nse ms-sql-config.nse ms-sql-empty-password.nse ms-sql-query.nse)
 nfs_scripts=(nfs-statfs.nse nfs-ls.nse nfs-showmount.nse)
 mysql_scripts=(mysql-audit.nse mysql-vuln-cve2012-2122.nse mysql-info.nse mysql-users.nse mysql-query.nse mysql-empty-password.nse mysql-databases.nse mysql-variables.nse mysql-enum.nse mysql-dump-hashes.nse)
@@ -156,12 +156,12 @@ run_nse vnc    "5800,5900" vnc_scripts
 run_nse redis  "6379"      redis_scripts
 run_nse mongodb "27017"    mongodb_scripts
 
-# ───────────────  8) Optional Vuln Sweep  ───────────────
+# ───────────────  8) Optional Vuln Sweep, fatality like MF Scorpion  ───────────────
 if [[ ${RUN_VULNS,,} == y* ]]; then
   echo -e "${RED}Vuln sweep—no mercy now!${NC}"
   nmap $NMAP_OPTS --script vuln -iL ips/ips_full.txt -oN loot/vulns/vuln_all.txt &>/dev/null
   print_progress 1 1 "vuln"
 fi
 
-# ───────────────  Finish  ───────────────
+# ───────────────  Time to chillax and enjoy the poonani  ───────────────
 echo -e "${RED}Mission complete, mon—coconut water and chill!${NC}"
