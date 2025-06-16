@@ -3,12 +3,12 @@
 #  Sensei Seagal – Rapid Recon Edition
 #  -------------------------------------------------------------
 #  A high‑speed network enumeration script with Jamaican‑Seagal
-#  vibes.  Adjust RATE / RETRIES / TEMPLATE below to trade speed
+#  vibes, BOMBOCLAAT! Adjust RATE / RETRIES / TEMPLATE below to trade speed
 #  for stealth on fragile networks.
 # =============================================================
 set -euo pipefail
 
-# ───────────────  Giving swag to da bois  ───────────────
+# ───────────────  Giving swag to dem bois  ───────────────
 RED='\e[31m'; NC='\e[0m'
 print_banner() {
   echo -e "${RED}======================================${NC}"
@@ -35,13 +35,13 @@ read -rp "Wagwan Bossy?Enter target (CIDR/range) or path to targets file: " TARG
 read -rp "Wanna run intrusive vuln scripts? (y/N): " RUN_VULNS
 read -rp "Finna run host‑enumeration (hostnames/services)? (y/N): " RUN_HOSTS
 
-# ───────────────  Directory Layout, keep the loot like a japanese pirate  ───────────────
+# ───────────────  Directory Layout, keep dat loot like a japanese pirate  ───────────────
 mkdir -p ips loot/httpx
 SERVICES=(ftp ssh telnet smtp httpx kerberos pop3 rpc netbios smb msrpc snmp ldap modbus mssql nfs mysql rdp vnc redis mongodb)
 for svc in "${SERVICES[@]}"; do mkdir -p "loot/$svc"; done
 mkdir -p loot/vulns loot/hosts
 
-# ───────────────  Speed Profile,we finish faster than a MF ninja  ───────────────
+# ───────────────  Speed Profile,we finish fasta den a rastaclaat ninja  ───────────────
 RATE=500    # packets/sec — lower this to be less invasive
 RETRIES=1   # probe retransmissions
 TEMPLATE=4  # Nmap timing template (0‑slow … 5‑fast)
@@ -50,7 +50,7 @@ NMAP_OPTS="-T${TEMPLATE} --max-retries ${RETRIES} --min-rate ${RATE} -Pn --open"
 # ───────────────  Helper Functions, disredard if you're Casey Ryback  ───────────────
 run_nse() {
   local svc="$1" ports="$2" arr_name="$3"
-  local -n arr="$arr_name"        # nameref to array
+  local -n arr="$arr_name"       
   local total=${#arr[@]} dir="loot/$svc"
   for i in "${!arr[@]}"; do
     local idx=$(( i + 1 )) scr="${arr[$i]}"
@@ -99,7 +99,7 @@ if [[ ${RUN_HOSTS,,} == y* ]]; then
   print_progress 1 1 "Host‑enum"
 fi
 
-# ───────────────  3) Check common services and F them up  ───────────────
+# ───────────────  3) Check common services and F them up like Jah ───────────────
 ftp_scripts=(ftp-anon.nse tftp-version.nse ftp-vsftpd-backdoor.nse ftp-syst.nse ftp-vuln-cve2010-4221.nse ftp-proftpd-backdoor.nse)
 ssh_scripts=(ssh-publickey-acceptance.nse ssh-auth-methods.nse ssh-run.nse sshv1.nse ssh-hostkey.nse)
 telnet_scripts=(telnet-ntlm-info.nse telnet-encryption.nse)
@@ -116,7 +116,7 @@ PORTS_WEB="80,81,82,88,443,4443,4433,8080,8000,7000,7070,6379,9000"
 cat ips/ips_full.txt | httpx -silent -mc 200 -p "$PORTS_WEB" -o loot/httpx/httpx.txt
 print_progress 1 1 "httpx"
 
-# ───────────────  5) Other stuff, finish the Job Steve!  ───────────────
+# ───────────────  5) Finish the Job Soke Seagal!!  ───────────────
 kerb_scripts=(krb5-enum-users.nse)
 pop3_scripts=(pop3-ntlm-info.nse pop3-capabilities.nse)
 rpc_scripts=(nfs-statfs.nse rpcap-info.nse rpc-grind.nse nfs-showmount.nse)
@@ -135,11 +135,11 @@ run_nse msrpc   "135"      msrpc_scripts
 run_nse snmp    "161"      snmp_scripts
 run_nse ldap    "389"      ldap_scripts
 
-# ───────────────  6) Modbus UDP, Sensei likes poonani  ───────────────
+# ───────────────  6) Modbus UDP, Sensei likes hot Jamaican poonani  ───────────────
 modbus_scripts=(modbus-discover.nse enip-info.nse)
 run_nse_udp modbus "502" modbus_scripts
 
-# ───────────────  7) Check those NFS shares for all the goodies  ───────────────
+# ───────────────  7) Check dem NFS shares for all da goodies  ───────────────
 mssql_scripts=(ms-sql-hasdbaccess.nse ms-sql-info.nse ms-sql-ntlm-info.nse ms-sql-config.nse ms-sql-empty-password.nse ms-sql-query.nse)
 nfs_scripts=(nfs-statfs.nse nfs-ls.nse nfs-showmount.nse)
 mysql_scripts=(mysql-audit.nse mysql-vuln-cve2012-2122.nse mysql-info.nse mysql-users.nse mysql-query.nse mysql-empty-password.nse mysql-databases.nse mysql-variables.nse mysql-enum.nse mysql-dump-hashes.nse)
